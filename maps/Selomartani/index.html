@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="css/leaflet.css" />
+    <link rel="stylesheet" href="css/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="css/qgis2web.css" />
+    <link rel="stylesheet" href="css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css" />
+    <link rel="stylesheet" href="css/leaflet-measure.css" />
+    <style>
+      #map {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+    <title>SIAP TARUNG</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="img/logo_sleman.png" alt="" width="30" height="35" class="d-inline-block align-text-top" />
+          Sistem Informasi Aktualisasi Pemanfaatan Tata Ruang Kabupaten Sleman (Selomartani)
+        </a>
+      </div>
+    </nav>
+    <div id="map"></div>
+    <script src="js/qgis2web_expressions.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/L.Control.Locate.min.js"></script>
+    <script src="js/leaflet.rotatedMarker.js"></script>
+    <script src="js/leaflet.pattern.js"></script>
+    <script src="js/leaflet-hash.js"></script>
+    <script src="js/Autolinker.min.js"></script>
+    <script src="js/rbush.min.js"></script>
+    <script src="js/labelgun.min.js"></script>
+    <script src="js/labels.js"></script>
+    <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+    <script src="js/leaflet-measure.js"></script>
+    <script src="data/Rencana_Pola_Ruang_Selomartani_2.js"></script>
+    <script src="data/KKPR2022_3.js"></script>
+    <script>
+      var map = L.map("map", {
+        zoomControl: true,
+        maxZoom: 28,
+        minZoom: 1,
+      }).fitBounds([
+        [-7.728823900784467, 110.45106925907984],
+        [-7.713285131909481, 110.47515158593058],
+      ]);
+      var hash = new L.Hash(map);
+      map.attributionControl.setPrefix(
+        '<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>'
+      );
+      var autolinker = new Autolinker({ truncate: { length: 30, location: "smart" } });
+      L.control.locate({ locateOptions: { maxZoom: 19 } }).addTo(map);
+      var measureControl = new L.Control.Measure({
+        position: "topleft",
+        primaryLengthUnit: "meters",
+        secondaryLengthUnit: "kilometers",
+        primaryAreaUnit: "sqmeters",
+        secondaryAreaUnit: "hectares",
+      });
+      measureControl.addTo(map);
+      document.getElementsByClassName("leaflet-control-measure-toggle")[0].innerHTML = "";
+      document.getElementsByClassName("leaflet-control-measure-toggle")[0].className += " fas fa-ruler";
+      var bounds_group = new L.featureGroup([]);
+      function setBounds() {}
+      map.createPane("pane_GoogleMaps_0");
+      map.getPane("pane_GoogleMaps_0").style.zIndex = 400;
+      var layer_GoogleMaps_0 = L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+        pane: "pane_GoogleMaps_0",
+        opacity: 1.0,
+        attribution: "",
+        minZoom: 1,
+        maxZoom: 28,
+      });
+      layer_GoogleMaps_0;
+      map.addLayer(layer_GoogleMaps_0);
+      map.createPane("pane_GoogleSatellite_1");
+      map.getPane("pane_GoogleSatellite_1").style.zIndex = 401;
+      var layer_GoogleSatellite_1 = L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+        pane: "pane_GoogleSatellite_1",
+        opacity: 1.0,
+        attribution: "",
+        minZoom: 1,
+        maxZoom: 28,
+      });
+      layer_GoogleSatellite_1;
+      map.addLayer(layer_GoogleSatellite_1);
+      function pop_Rencana_Pola_Ruang_Selomartani_2(feature, layer) {
+        var popupContent =
+          '<table>\
+                    <tr>\
+                        <th scope="row">NAMOBJ</th>\
+                        <td>' +
+          (feature.properties["NAMOBJ"] !== null ? autolinker.link(feature.properties["NAMOBJ"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KODBWP</th>\
+                        <td>' +
+          (feature.properties["KODBWP"] !== null ? autolinker.link(feature.properties["KODBWP"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KOSBWP</th>\
+                        <td>' +
+          (feature.properties["KOSBWP"] !== null ? autolinker.link(feature.properties["KOSBWP"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KODBLK</th>\
+                        <td>' +
+          (feature.properties["KODBLK"] !== null ? autolinker.link(feature.properties["KODBLK"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KODSBL</th>\
+                        <td>' +
+          (feature.properties["KODSBL"] !== null ? autolinker.link(feature.properties["KODSBL"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">WADMPR</th>\
+                        <td>' +
+          (feature.properties["WADMPR"] !== null ? autolinker.link(feature.properties["WADMPR"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">WADMKK</th>\
+                        <td>' +
+          (feature.properties["WADMKK"] !== null ? autolinker.link(feature.properties["WADMKK"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">WADMKC</th>\
+                        <td>' +
+          (feature.properties["WADMKC"] !== null ? autolinker.link(feature.properties["WADMKC"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">WADMKD</th>\
+                        <td>' +
+          (feature.properties["WADMKD"] !== null ? autolinker.link(feature.properties["WADMKD"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TPZ_00</th>\
+                        <td>' +
+          (feature.properties["TPZ_00"] !== null ? autolinker.link(feature.properties["TPZ_00"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LUASHA</th>\
+                        <td>' +
+          (feature.properties["LUASHA"] !== null ? autolinker.link(feature.properties["LUASHA"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Shape_Leng</th>\
+                        <td>' +
+          (feature.properties["Shape_Leng"] !== null ? autolinker.link(feature.properties["Shape_Leng"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Shape_Area</th>\
+                        <td>' +
+          (feature.properties["Shape_Area"] !== null ? autolinker.link(feature.properties["Shape_Area"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">namazona</th>\
+                        <td>' +
+          (feature.properties["namazona"] !== null ? autolinker.link(feature.properties["namazona"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_NAMZON</th>\
+                        <td>' +
+          (feature.properties["d_NAMZON"] !== null ? autolinker.link(feature.properties["d_NAMZON"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_KODZON</th>\
+                        <td>' +
+          (feature.properties["d_KODZON"] !== null ? autolinker.link(feature.properties["d_KODZON"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_NAMSZN</th>\
+                        <td>' +
+          (feature.properties["d_NAMSZN"] !== null ? autolinker.link(feature.properties["d_NAMSZN"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_KODSZN</th>\
+                        <td>' +
+          (feature.properties["d_KODSZN"] !== null ? autolinker.link(feature.properties["d_KODSZN"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_KKOP_1</th>\
+                        <td>' +
+          (feature.properties["d_KKOP_1"] !== null ? autolinker.link(feature.properties["d_KKOP_1"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_LP2B_2</th>\
+                        <td>' +
+          (feature.properties["d_LP2B_2"] !== null ? autolinker.link(feature.properties["d_LP2B_2"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_KRB_03</th>\
+                        <td>' +
+          (feature.properties["d_KRB_03"] !== null ? autolinker.link(feature.properties["d_KRB_03"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_TOD_04</th>\
+                        <td>' +
+          (feature.properties["d_TOD_04"] !== null ? autolinker.link(feature.properties["d_TOD_04"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_TEB_05</th>\
+                        <td>' +
+          (feature.properties["d_TEB_05"] !== null ? autolinker.link(feature.properties["d_TEB_05"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_CAGBUD</th>\
+                        <td>' +
+          (feature.properties["d_CAGBUD"] !== null ? autolinker.link(feature.properties["d_CAGBUD"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_HANKAM</th>\
+                        <td>' +
+          (feature.properties["d_HANKAM"] !== null ? autolinker.link(feature.properties["d_HANKAM"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_PUSLIT</th>\
+                        <td>' +
+          (feature.properties["d_PUSLIT"] !== null ? autolinker.link(feature.properties["d_PUSLIT"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_RESAIR</th>\
+                        <td>' +
+          (feature.properties["d_RESAIR"] !== null ? autolinker.link(feature.properties["d_RESAIR"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">d_SANGGA</th>\
+                        <td>' +
+          (feature.properties["d_SANGGA"] !== null ? autolinker.link(feature.properties["d_SANGGA"].toLocaleString()) : "") +
+          "</td>\
+                    </tr>\
+                </table>";
+        layer.bindPopup(popupContent, { maxHeight: 400 });
+      }
+
+      function style_Rencana_Pola_Ruang_Selomartani_2_0(feature) {
+        switch (String(feature.properties["d_KODSZN"])) {
+          case "BA":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(151,219,242,0.7)",
+              interactive: true,
+            };
+            break;
+          case "BJ":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,0,0,0.7)",
+              interactive: true,
+            };
+            break;
+          case "CB":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(230,204,230,0.7)",
+              interactive: true,
+            };
+            break;
+          case "K-2":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,128,128,0.7)",
+              interactive: true,
+            };
+            break;
+          case "K-3":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,153,153,0.7)",
+              interactive: true,
+            };
+            break;
+          case "KPI":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(173,185,202,0.7)",
+              interactive: true,
+            };
+            break;
+          case "KT":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(226,25,132,0.7)",
+              interactive: true,
+            };
+            break;
+          case "MA":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(168,255,191,0.7)",
+              interactive: true,
+            };
+            break;
+          case "P-1":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(180,237,142,0.7)",
+              interactive: true,
+            };
+            break;
+          case "R-2":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,255,115,0.7)",
+              interactive: true,
+            };
+            break;
+          case "RTH-1":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(101,229,50,0.7)",
+              interactive: true,
+            };
+            break;
+          case "SPU-1":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(224,25,191,0.7)",
+              interactive: true,
+            };
+            break;
+          case "SS":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(194,255,204,0.7)",
+              interactive: true,
+            };
+            break;
+          case "TR":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,40,50,0.7)",
+              interactive: true,
+            };
+            break;
+          case "W":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,230,255,0.7)",
+              interactive: true,
+            };
+            break;
+          case "SPU-2":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(233,39,201,0.7)",
+              interactive: true,
+            };
+            break;
+          case "SPU-3":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(240,90,215,0.7)",
+              interactive: true,
+            };
+            break;
+          case "R-3":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,255,153,0.7)",
+              interactive: true,
+            };
+            break;
+          case "R-4":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,255,191,0.7)",
+              interactive: true,
+            };
+            break;
+          case "RTH-2":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(101,229,50,0.7)",
+              interactive: true,
+            };
+            break;
+          case "RTH-4":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(101,229,50,0.7)",
+              interactive: true,
+            };
+            break;
+          case "RTH-7":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(101,229,50,0.7)",
+              interactive: true,
+            };
+            break;
+          case "RTNH":
+            return {
+              pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+              opacity: 1,
+              color: "rgba(35,35,35,0.0)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(225,225,225,0.7)",
+              interactive: true,
+            };
+            break;
+        }
+      }
+      map.createPane("pane_Rencana_Pola_Ruang_Selomartani_2");
+      map.getPane("pane_Rencana_Pola_Ruang_Selomartani_2").style.zIndex = 402;
+      map.getPane("pane_Rencana_Pola_Ruang_Selomartani_2").style["mix-blend-mode"] = "normal";
+      var layer_Rencana_Pola_Ruang_Selomartani_2 = new L.geoJson(json_Rencana_Pola_Ruang_Selomartani_2, {
+        attribution: "",
+        interactive: true,
+        dataVar: "json_Rencana_Pola_Ruang_Selomartani_2",
+        layerName: "layer_Rencana_Pola_Ruang_Selomartani_2",
+        pane: "pane_Rencana_Pola_Ruang_Selomartani_2",
+        onEachFeature: pop_Rencana_Pola_Ruang_Selomartani_2,
+        style: style_Rencana_Pola_Ruang_Selomartani_2_0,
+      });
+      bounds_group.addLayer(layer_Rencana_Pola_Ruang_Selomartani_2);
+      map.addLayer(layer_Rencana_Pola_Ruang_Selomartani_2);
+      function pop_KKPR2022_3(feature, layer) {
+        var popupContent =
+          '<table>\
+                    <tr>\
+                        <th scope="row">NO</th>\
+                        <td>' +
+          (feature.properties["NO"] !== null ? autolinker.link(feature.properties["NO"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">No Registrasi</th>\
+                        <td>' +
+          (feature.properties["NOREG"] !== null ? autolinker.link(feature.properties["NOREG"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tanggal Masuk</th>\
+                        <td>' +
+          (feature.properties["TANGGAL_MA"] !== null ? autolinker.link(feature.properties["TANGGAL_MA"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nomer Izin</th>\
+                        <td>' +
+          (feature.properties["NO_IZIN"] !== null ? autolinker.link(feature.properties["NO_IZIN"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tanggal SK</th>\
+                        <td>' +
+          (feature.properties["TANGGAL_SK"] !== null ? autolinker.link(feature.properties["TANGGAL_SK"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Peruntukan</th>\
+                        <td>' +
+          (feature.properties["PERUNTUK_1"] !== null ? autolinker.link(feature.properties["PERUNTUK_1"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Jenis Izin</th>\
+                        <td>' +
+          (feature.properties["JENIS_IZIN"] !== null ? autolinker.link(feature.properties["JENIS_IZIN"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Jenis Sertifikat</th>\
+                        <td>' +
+          (feature.properties["JENIS_SETI"] !== null ? autolinker.link(feature.properties["JENIS_SETI"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nomer Sertifikat</th>\
+                        <td>' +
+          (feature.properties["NO_SERTIFI"] !== null ? autolinker.link(feature.properties["NO_SERTIFI"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Luas Sertifikat</th>\
+                        <td>' +
+          (feature.properties["LUAS_SERTI"] !== null ? autolinker.link(feature.properties["LUAS_SERTI"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Luas Diizinkan</th>\
+                        <td>' +
+          (feature.properties["LUAS_DIIZI"] !== null ? autolinker.link(feature.properties["LUAS_DIIZI"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Status Lahan</th>\
+                        <td>' +
+          (feature.properties["STATUS_LAH"] !== null ? autolinker.link(feature.properties["STATUS_LAH"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nomer Surat Rekomendasi</th>\
+                        <td>' +
+          (feature.properties["NO_SURAT_R"] !== null ? autolinker.link(feature.properties["NO_SURAT_R"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tanggal Surat</th>\
+                        <td>' +
+          (feature.properties["TGL_SURAT"] !== null ? autolinker.link(feature.properties["TGL_SURAT"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Lokasi Izin</th>\
+                        <td>' +
+          (feature.properties["LOKASI_IZI"] !== null ? autolinker.link(feature.properties["LOKASI_IZI"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Padukuhan</th>\
+                        <td>' +
+          (feature.properties["PADUKUHA_1"] !== null ? autolinker.link(feature.properties["PADUKUHA_1"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Desa</th>\
+                        <td>' +
+          (feature.properties["DESA_1"] !== null ? autolinker.link(feature.properties["DESA_1"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kapanewon</th>\
+                        <td>' +
+          (feature.properties["KECAMATA_1"] !== null ? autolinker.link(feature.properties["KECAMATA_1"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Badan Usaha</th>\
+                        <td>' +
+          (feature.properties["BADAN_USAH"] !== null ? autolinker.link(feature.properties["BADAN_USAH"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Alur Berkas</th>\
+                        <td>' +
+          (feature.properties["ALUR_BERKA"] !== null ? autolinker.link(feature.properties["ALUR_BERKA"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Status Berkas</th>\
+                        <td>' +
+          (feature.properties["STATUS_BER"] !== null ? autolinker.link(feature.properties["STATUS_BER"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' +
+          (feature.properties["No_1"] !== null ? autolinker.link(feature.properties["No_1"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Keadaan Tanah</th>\
+                        <td>' +
+          (feature.properties["Keadaan_ta"] !== null ? autolinker.link(feature.properties["Keadaan_ta"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Peruntukan</th>\
+                        <td>' +
+          (feature.properties["Peruntukan"] !== null ? autolinker.link(feature.properties["Peruntukan"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kapanewon</th>\
+                        <td>' +
+          (feature.properties["Kapanewon"] !== null ? autolinker.link(feature.properties["Kapanewon"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kalurahan</th>\
+                        <td>' +
+          (feature.properties["Kalurahan"] !== null ? autolinker.link(feature.properties["Kalurahan"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Padukuhan</th>\
+                        <td>' +
+          (feature.properties["Padukuhan"] !== null ? autolinker.link(feature.properties["Padukuhan"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Luas</th>\
+                        <td>' +
+          (feature.properties["Luas"] !== null ? autolinker.link(feature.properties["Luas"].toLocaleString()) : "") +
+          '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Koordinat</th>\
+                        <td>' +
+          (feature.properties["Koordinat"] !== null ? autolinker.link(feature.properties["Koordinat"].toLocaleString()) : "") +
+          "</td>\
+                    </tr>\
+                </table>";
+        layer.bindPopup(popupContent, { maxHeight: 400 });
+      }
+
+      function style_KKPR2022_3_0(feature) {
+        switch (String(feature.properties["ALUR_BERKA"])) {
+          case "SK JADI":
+            return {
+              pane: "pane_KKPR2022_3",
+              opacity: 1,
+              color: "rgba(35,35,35,0.8)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(28,243,17,0.8)",
+              interactive: true,
+            };
+            break;
+          case "BERKAS DITOLAK DINAS TEKNIS":
+            return {
+              pane: "pane_KKPR2022_3",
+              opacity: 1,
+              color: "rgba(35,35,35,0.8)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,0,0,0.8)",
+              interactive: true,
+            };
+            break;
+          case "PENGAMBILAN DOKUMEN":
+            return {
+              pane: "pane_KKPR2022_3",
+              opacity: 1,
+              color: "rgba(35,35,35,0.8)",
+              dashArray: "",
+              lineCap: "butt",
+              lineJoin: "miter",
+              weight: 1.0,
+              fill: true,
+              fillOpacity: 1,
+              fillColor: "rgba(255,255,115,0.8)",
+              interactive: true,
+            };
+            break;
+        }
+      }
+      map.createPane("pane_KKPR2022_3");
+      map.getPane("pane_KKPR2022_3").style.zIndex = 403;
+      map.getPane("pane_KKPR2022_3").style["mix-blend-mode"] = "normal";
+      var layer_KKPR2022_3 = new L.geoJson(json_KKPR2022_3, {
+        attribution: "",
+        interactive: true,
+        dataVar: "json_KKPR2022_3",
+        layerName: "layer_KKPR2022_3",
+        pane: "pane_KKPR2022_3",
+        onEachFeature: pop_KKPR2022_3,
+        style: style_KKPR2022_3_0,
+      });
+      bounds_group.addLayer(layer_KKPR2022_3);
+      map.addLayer(layer_KKPR2022_3);
+      var osmGeocoder = new L.Control.Geocoder({
+        collapsed: true,
+        position: "topleft",
+        text: "Search",
+        title: "Testing",
+      }).addTo(map);
+      document.getElementsByClassName("leaflet-control-geocoder-icon")[0].className += " fa fa-search";
+      document.getElementsByClassName("leaflet-control-geocoder-icon")[0].title += "Search for a place";
+      var baseMaps = {};
+      L.control
+        .layers(baseMaps, {
+          'KKPR 2022<br /><table><tr><td style="text-align: center;"><img src="legend/KKPR2022_3_SKJADI0.png" /></td><td>SK JADI</td></tr><tr><td style="text-align: center;"><img src="legend/KKPR2022_3_BERKASDITOLAKDINASTEKNIS1.png" /></td><td>BERKAS DITOLAK DINAS TEKNIS</td></tr><tr><td style="text-align: center;"><img src="legend/KKPR2022_3_PENGAMBILANDOKUMEN2.png" /></td><td>PENGAMBILAN DOKUMEN</td></tr></table>':
+            layer_KKPR2022_3,
+          'Rencana_Pola_Ruang_Selomartani<br /><table><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_BA0.png" /></td><td>BA</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_BJ1.png" /></td><td>BJ</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_CB2.png" /></td><td>CB</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_K23.png" /></td><td>K-2</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_K34.png" /></td><td>K-3</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_KPI5.png" /></td><td>KPI</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_KT6.png" /></td><td>KT</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_MA7.png" /></td><td>MA</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_P18.png" /></td><td>P-1</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_R29.png" /></td><td>R-2</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_RTH110.png" /></td><td>RTH-1</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_SPU111.png" /></td><td>SPU-1</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_SS12.png" /></td><td>SS</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_TR13.png" /></td><td>TR</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_W14.png" /></td><td>W</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_SPU215.png" /></td><td>SPU-2</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_SPU316.png" /></td><td>SPU-3</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_R317.png" /></td><td>R-3</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_R418.png" /></td><td>R-4</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_RTH219.png" /></td><td>RTH-2</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_RTH420.png" /></td><td>RTH-4</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_RTH721.png" /></td><td>RTH-7</td></tr><tr><td style="text-align: center;"><img src="legend/Rencana_Pola_Ruang_Selomartani_2_RTNH22.png" /></td><td>RTNH</td></tr></table>':
+            layer_Rencana_Pola_Ruang_Selomartani_2,
+          "Google Satellite": layer_GoogleSatellite_1,
+          "Google Maps": layer_GoogleMaps_0,
+        })
+        .addTo(map);
+      setBounds();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </body>
+</html>
